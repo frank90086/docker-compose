@@ -1,0 +1,15 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+filebeat.inputs:
+- type: log
+  paths:
+    - '/var/log/*.log'
+  encoding: utf-8
+processors:
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+output.logstash:
+  hosts: [ 'logstash:5044' ]
+  timeout: 15

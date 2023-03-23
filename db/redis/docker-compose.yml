@@ -1,0 +1,13 @@
+version: "3"
+services:
+  redis:
+    container_name: redis
+    image: redis:alpine
+    volumes:
+      - ../vol/redis/redis/data:/data
+    ports:
+      - 6379:6379
+networks:
+  default:
+    external:
+      name: dev

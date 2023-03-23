@@ -1,0 +1,55 @@
+version: "3.7"
+services:
+  # dind
+  # docker-excutor:
+  #   container_name: jenkins-docker
+  #   image: docker:dind
+  #   privileged: true
+  #   environment:
+  #     - DOCKER_TLS_CERTDIR=/certs
+  #   volumes:
+  #     - ./vol/jenkins-docker-certs:/certs/client
+  #     - ./vol/jenkins-data:/var/jenkins_home
+  #     - ./vol/lib/docker:/var/lib/docker
+  #   ports:
+  #     - 2376:2376
+  #   networks:
+  #     default:
+  #       aliases:
+  #         - docker
+  jenkins:
+    container_name: jenkins
+    build:
+      context: ./jenkins
+    image: jenkins-blueocean:2.375.1
+    # dood
+    user: root
+    privileged: true
+    environment:
+      # dind
+      # - DOCKER_HOST=tcp://docker:2376
+      # - DOCKER_CERT_PATH=/certs/client
+      # - DOCKER_TLS_VERIFY=1
+      - JENKINS_UC_DOWNLOAD_URL=http://ftp.yz.yamagata-u.ac.jp/pub/misc/jenkins
+    volumes:
+      - ./vol/jenkins-docker-certs:/certs/client:ro
+      - ./vol/jenkins-data:/var/jenkins_home
+      # dood
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+      - 50000:50000
+  agent:
+    container_name: jenkins-agent
+    build:
+      context: ./agent
+    image: jenkins/jnlp-slave:latest-jdk11-docker-cli
+    user: root
+    privileged: true
+    command: ["-url", "http://jenkins:8080",  "-workDir=/home/jenkins/agent",  "f202b4e12e192dfdb63d5b678900f254f3f952865811e528df6a2cc3c22e92cf",  "agent1"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+networks:
+  default:
+    external:
+      name: dev
