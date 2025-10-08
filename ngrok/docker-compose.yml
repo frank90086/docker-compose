@@ -2,7 +2,7 @@ version: "3.7"
 services:
     ngrok:
         image: ngrok/ngrok:latest
-        restart: unless-stopped
+        restart: always
         container_name: ngrok
         command:
           - "start"
